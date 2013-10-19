@@ -576,6 +576,9 @@ extern void   rt_init_context (P_TCB p_TCB, U8 priority, FUNCP task_body);
 /// Create a thread and add it to Active Threads and set it to state READY
 osThreadId svcThreadCreate (osThreadDef_t *thread_def, void *argument) {
   P_TCB  ptcb;
+	U8 priority;
+	P_TCB task_context;
+	OS_TID tsk;
   
   if ((thread_def == NULL) ||
       (thread_def->pthread == NULL) ||
@@ -587,8 +590,8 @@ osThreadId svcThreadCreate (osThreadDef_t *thread_def, void *argument) {
     return NULL; 
   }
   
-  U8 priority = thread_def->tpriority - osPriorityIdle + 1;
-  P_TCB task_context = &thread_def->tcb;
+  priority = thread_def->tpriority - osPriorityIdle + 1;
+  task_context = &thread_def->tcb;
   
   /* If "size != 0" use a private user provided stack. */
   task_context->stack      = (U32*)thread_def->stack_pointer;
@@ -599,7 +602,7 @@ osThreadId svcThreadCreate (osThreadDef_t *thread_def, void *argument) {
   rt_init_context (task_context, priority, (FUNCP)thread_def->pthread);
 
   /* Find a free entry in 'os_active_TCB' table. */
-  OS_TID tsk = rt_get_TID ();
+  tsk = rt_get_TID ();
   os_active_TCB[tsk-1] = task_context;
   task_context->task_id = tsk;
   DBG_TASK_NOTIFY(task_context, __TRUE);

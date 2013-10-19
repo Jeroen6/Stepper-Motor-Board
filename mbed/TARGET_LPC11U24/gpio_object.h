@@ -16,6 +16,8 @@
 #ifndef MBED_GPIO_OBJECT_H
 #define MBED_GPIO_OBJECT_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,14 +32,14 @@ typedef struct {
     __I  uint32_t *reg_in;
 } gpio_t;
 
-static inline void gpio_write(gpio_t *obj, int value) {
+static void gpio_write(gpio_t *obj, int value) {
     if (value)
         *obj->reg_set = obj->mask;
     else
         *obj->reg_clr = obj->mask;
 }
 
-static inline int gpio_read(gpio_t *obj) {
+static int gpio_read(gpio_t *obj) {
     return ((*obj->reg_in & obj->mask) ? 1 : 0);
 }
 

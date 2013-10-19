@@ -50,7 +50,7 @@
 //   <i> Default: 6
 #ifndef OS_TASKCNT
 #  if defined(TARGET_LPC1768) || defined(TARGET_LPC2368) || defined(TARGET_LPC4088) || defined(TARGET_LPC1347)
-#    define OS_TASKCNT         14
+#    define OS_TASKCNT         4
 #  elif defined(TARGET_LPC11U24) || (TARGET_LPC1114) || (TARGET_LPC812) || defined(TARGET_KL25Z)
 #    define OS_TASKCNT         6
 #  endif
@@ -82,7 +82,7 @@
 // <i> Includes the stack checking code for stack overflow.
 // <i> Note that additional code reduces the Kernel performance.
 #ifndef OS_STKCHECK
- #define OS_STKCHECK    1
+ #define OS_STKCHECK    0
 #endif
 
 // <o>Processor mode for thread execution 
@@ -122,7 +122,7 @@
 //   <i> Defines the timer tick value.
 //   <i> Default: 1000  (1ms)
 #ifndef OS_TICK
- #define OS_TICK        1000
+ #define OS_TICK        100
 #endif
 
 // </h>
@@ -142,7 +142,7 @@
 //   <i> Defines how long a thread will execute before a thread switch.
 //   <i> Default: 5
 #ifndef OS_ROBINTOUT
- #define OS_ROBINTOUT   5
+ #define OS_ROBINTOUT   1
 #endif
 
 // </e>
