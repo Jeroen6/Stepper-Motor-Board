@@ -2,41 +2,14 @@
 ### Preparing for ADS-LD.
 ### Creating ADS-LD Command Line
 ### List of Objects: adding '".\build\main.o"'
-### List of Objects: adding '".\build\usbhal_kl25z.o"'
-### List of Objects: adding '".\build\usbhal_lpc17.o"'
 ### List of Objects: adding '".\build\usbhal_lpc11u.o"'
-### List of Objects: adding '".\build\usbhal_lpc40.o"'
 ### List of Objects: adding '".\build\usbdevice.o"'
-### List of Objects: adding '".\build\usbaudio.o"'
 ### List of Objects: adding '".\build\usbmousekeyboard.o"'
 ### List of Objects: adding '".\build\usbmouse.o"'
 ### List of Objects: adding '".\build\usbkeyboard.o"'
 ### List of Objects: adding '".\build\usbhid.o"'
-### List of Objects: adding '".\build\usbmidi.o"'
-### List of Objects: adding '".\build\usbmsd.o"'
-### List of Objects: adding '".\build\usbcdc.o"'
-### List of Objects: adding '".\build\usbserial.o"'
-### List of Objects: adding '".\build\thread.o"'
-### List of Objects: adding '".\build\semaphore.o"'
-### List of Objects: adding '".\build\rtostimer.o"'
-### List of Objects: adding '".\build\mutex.o"'
-### List of Objects: adding '".\build\svc_table.o"'
-### List of Objects: adding '".\build\rt_task.o"'
-### List of Objects: adding '".\build\rt_system.o"'
-### List of Objects: adding '".\build\rt_list.o"'
-### List of Objects: adding '".\build\rt_time.o"'
-### List of Objects: adding '".\build\rt_semaphore.o"'
-### List of Objects: adding '".\build\rt_mailbox.o"'
-### List of Objects: adding '".\build\rt_cmsis.o"'
-### List of Objects: adding '".\build\rt_robin.o"'
-### List of Objects: adding '".\build\hal_cm.o"'
-### List of Objects: adding '".\build\rt_membox.o"'
-### List of Objects: adding '".\build\rtx_conf_cm.o"'
-### List of Objects: adding '".\build\rt_event.o"'
-### List of Objects: adding '".\build\rt_mutex.o"'
-### List of Objects: adding '".\build\hal_cm0.o"'
 ### ADS-LD Command completed:
---cpu Cortex-M0 ".\build\main.o" ".\build\usbhal_kl25z.o" ".\build\usbhal_lpc17.o" ".\build\usbhal_lpc11u.o" ".\build\usbhal_lpc40.o" ".\build\usbdevice.o" ".\build\usbaudio.o" ".\build\usbmousekeyboard.o" ".\build\usbmouse.o" ".\build\usbkeyboard.o" ".\build\usbhid.o" ".\build\usbmidi.o" ".\build\usbmsd.o" ".\build\usbcdc.o" ".\build\usbserial.o" ".\build\thread.o" ".\build\semaphore.o" ".\build\rtostimer.o" ".\build\mutex.o" ".\build\svc_table.o" ".\build\rt_task.o" ".\build\rt_system.o" ".\build\rt_list.o" ".\build\rt_time.o" ".\build\rt_semaphore.o" ".\build\rt_mailbox.o" ".\build\rt_cmsis.o" ".\build\rt_robin.o" ".\build\hal_cm.o" ".\build\rt_membox.o" ".\build\rtx_conf_cm.o" ".\build\rt_event.o" ".\build\rt_mutex.o" ".\build\hal_cm0.o" 
+--cpu Cortex-M0 ".\build\main.o" ".\build\usbhal_lpc11u.o" ".\build\usbdevice.o" ".\build\usbmousekeyboard.o" ".\build\usbmouse.o" ".\build\usbkeyboard.o" ".\build\usbhid.o" 
 --strict --scatter "mbed/TARGET_LPC11U24/TOOLCHAIN_ARM_STD/LPC11U24.sct" 
 
             
@@ -56,11 +29,11 @@
 --info sizes --info totals --info unused --info veneers 
  --list ".\build\SteppermotorBoard.map" -o .\build\SteppermotorBoard.axf### Preparing Environment (PrepEnvAds)
 ### ADS-LD Output File: '.\build\SteppermotorBoard.axf'
-### ADS-LD Command File: '.\build\SteppermotorBoard.l2p'
+### ADS-LD Command File: '.\build\SteppermotorBoard.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile '.\build\SteppermotorBoard.l2p', Handle=0x00000564
+### Creating CmdFile '.\build\SteppermotorBoard.lnp', Handle=0x00000980
 ### Writing '.lnp' file
-### ADS-LD Command file '.\build\SteppermotorBoard.l2p' is ready.
+### ADS-LD Command file '.\build\SteppermotorBoard.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.
 ### ADS-LD: executed with 0 errors
 ### Updating obj list
