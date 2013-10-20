@@ -17,6 +17,7 @@ void SMC_init(void);
 int SMC_step(int steps, uint8_t dir, uint32_t time_ms, uint8_t free);
 int SMC_step_cmd(step_command_t *cmd);
 uint32_t SMC_idle(void);
+void SMC_deinit(void);
 
 /* Lookup tables */
 const uint16_t LUT_H1[32] = {

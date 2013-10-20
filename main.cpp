@@ -18,7 +18,7 @@ InterruptIn button(P0_1);
 void button_handler(void){
 	wait(0.1);
 	WatchDog_us bello(100);
-	// Reset
+	// Reset by watchdog does not iniate bootloader when button is low
 }
 
 int main() {
@@ -27,18 +27,19 @@ int main() {
 	// Motor Control IO config
 	SMC_init();
 	// LED
-	led = 0;
+	
 	// USB Initialize	
 	static USBHID hid_object(12, 12);
 	hid = &hid_object;
 	send_report.length = 12;
 	
+	led = 0;
 	// Motor selftest
-	SMC_step(1600, 1, 1000, 1);
-	while( !SMC_idle() );
-	SMC_step(1600, 1, 1000, 1);
-	while( !SMC_idle() );
-		
+	//SMC_step(1600, 1, 1200000, 1);
+	//while( !SMC_idle() );
+	//SMC_step(1600, 1, 10000, 1);
+	//while( !SMC_idle() );
+	
 	typedef  struct  {
 		uint8_t cmd;
 		uint8_t data[11];
@@ -75,7 +76,8 @@ int main() {
 		scmd.free = recv_report.data[10]                ;
 		//recv_report.data[11];
 		
-		if(cmd.cmd == 1){
+		switch(cmd.cmd){
+		case 1:	// Step Command
 				if(0 == SMC_step(scmd.steps, scmd.dir, scmd.time_ms, scmd.free )){
 					while( !SMC_idle() );
 					// return ok
@@ -92,7 +94,11 @@ int main() {
 					send_report.data[0] = 0;
 					send_report.data[1] = 0;
 				}
-		}else{
+				break;
+		case 2:	// Stop step command
+			SMC_deinit();
+		case 0:
+		default:
 			send_report.data[0] = 0xFF;
 			send_report.data[1] = cmd.cmd;
 			send_report.data[2] = 0;
@@ -104,9 +110,8 @@ int main() {
 			send_report.data[2] = 0;
 			send_report.data[3] = 0;
 			send_report.data[4] = 0;
-			
-		}
-		
+			break;
+		}	
 	}
 }
 

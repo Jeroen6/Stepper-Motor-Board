@@ -25,10 +25,28 @@ void SMC_init(void){
 	HIFET_2 = 0;
 	HIFET_3 = 0;
 	HIFET_4 = 0;
+	// Wait minimum
+	
 	// Lo fet low
   CT32B0_initpwm(PWM_PERIOD,0);
 	// Start pwm
 	CT32B0_start();
+}
+
+void SMC_deinit(void){
+	smc.detach();
+	CT32B0_deinit(0);
+	
+  HIFET_1 = 0;
+	HIFET_2 = 0;
+	HIFET_3 = 0;
+	HIFET_4 = 0;
+
+	smc_walker	=	0;
+	smc_dir 		= 1;
+	smc_steps	= -1;
+	smc_free		= 1;
+  smc_abort	= 0;
 }
 
 void SMC_routine(void){
@@ -121,34 +139,26 @@ int SMC_step(int steps, uint8_t dir, uint32_t time_ms, uint8_t free){
 	// steps   = number of microsteps (8 microsteps per full step)
 	// dir	   = -1 or 1
 	// time_us = completion time in s
-	smc_steps = steps;
-	if(free > 1) return -1;
-	if(steps < 1) return -1;
-	if(dir > 1) return -1;
+	uint32_t steptime = (time_ms*1000)/steps;	
+	// Parameter check
+	if(smc_steps != -1)	return -1;	// Only if motor idle
+	if(steps < 1) return -1;        // At least one step
+	if(dir) dir = 1;            		// Round dir to bool
+	if(free) free = 1;        			// Round free to bool
+	if(steptime < MIN_STEPTIME_US)  // Verify steptime
+			return -1;
 	if(dir == 0) smc_dir = -1; else smc_dir = 1;
+	// Configure stepper
+	smc_steps = steps;
 	smc_free	= free;
-  uint32_t steptime = (time_ms*1000)/steps;
-	if(steptime < MIN_STEPTIME_US)
-			return -1;	
+	// Initiate
 	SMC_init();				
 	smc.attach_us(&SMC_routine, steptime);
 	return 0;	
 }
 
 int SMC_step_cmd(step_command_t *scmd){
-	#warning SMC_step_cmd DOET HET NIET
- 	smc_steps = scmd->steps;
-	if(scmd->free > 1) return -1;
-	if(scmd->steps < 1) return -1;
-	if(scmd->dir > 1) return -1;
-	if(scmd->dir == 0) smc_dir = -1; else smc_dir = 1;
-	smc_free	= scmd->free;
-  uint32_t steptime = (scmd->time_ms*1000)/scmd->steps;
-	if(steptime < MIN_STEPTIME_US)
-			return -1;
-			
-	smc.attach_us(&SMC_routine, steptime);
-	return 0;	
+	return -1;
 }
 
 uint32_t SMC_idle(void){
