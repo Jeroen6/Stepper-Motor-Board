@@ -18,6 +18,8 @@
 volatile uint8_t 	stage 	= 0;
 volatile uint32_t period 	= 0;
 volatile uint32_t mat[4];
+volatile uint32_t default_period_us;
+volatile uint32_t defaultstate;
 
 void CT32B0_initpwm(uint32_t period_us, uint32_t defaultstate){
 		// Calculte period
@@ -70,6 +72,10 @@ void CT32B0_initpwm(uint32_t period_us, uint32_t defaultstate){
     LPC_IOCON->PIO1_25 = 0x1;
 		
 		LPC_CT32B0->TCR		= 0;
+}
+
+void CT32B0_reinitpwm(void){
+	CT32B0_initpwm(default_period_us,defaultstate	);
 }
 
 void CT32B0_start(void){
@@ -129,4 +135,9 @@ void CT32B0_reload_mat(void){
 void CT32B0_set(uint8_t matnr, uint32_t value){
 	mat[matnr] = value;
 	CT32B0_reload_mat();
+}
+
+void CT32B0_wait_refresh(void){
+	if( (LPC_CT32B0->TCR & 1) )
+		while(LPC_CT32B0->TC != 0);
 }

@@ -2,7 +2,8 @@
 #include "smc.h"
 #include "CT32B0_PWM.h"
 
-#define PWM_PERIOD	512
+#define PWM_PERIOD				513
+#define MIN_STEPTIME_US  	100
 
 /* Motor Control IO */
 DigitalOut HIFET_1(P0_16);
@@ -32,6 +33,8 @@ void SMC_init(void){
 
 void SMC_routine(void){
 	#define i	smc_walker
+	CT32B0_wait_refresh();
+	
 	// Phase 1 A	
 	// If sin +, H1->L2
 	// If sin -, H2->L1
@@ -80,6 +83,12 @@ void SMC_routine(void){
 	errfet[1] = hifet[1] & lofet[1];
 	errfet[2] = hifet[2] & lofet[2];
 	errfet[3] = hifet[3] & lofet[3];
+	
+	if( errfet[0] | errfet[1] | errfet[2] | errfet[3] ){
+		// ILLEGAL MODE
+		smc_abort = 1;
+	}
+	
 	#undef i
 	
 	/* Walk */
@@ -91,13 +100,13 @@ void SMC_routine(void){
 	/* Coutdown */
 	if(smc_steps != -1){
 	if(smc_steps == 0 || smc_abort == 1){
-		if(smc_free){
+		if(smc_free || smc_abort == 1){
 			// motor free
-			CT32B0_deinit(0);
 			HIFET_1 = 0;
 			HIFET_2 = 0;
 			HIFET_3 = 0;
 			HIFET_4 = 0;
+			CT32B0_deinit(0);
 		}else{
 			// motor locked
 		}
@@ -108,14 +117,45 @@ void SMC_routine(void){
 	}
 }
 
-void SMC_step(uint32_t steps, uint8_t dir, uint32_t time_ms, uint8_t free){
+int SMC_step(int steps, uint8_t dir, uint32_t time_ms, uint8_t free){
 	// steps   = number of microsteps (8 microsteps per full step)
 	// dir	   = -1 or 1
 	// time_us = completion time in s
 	smc_steps = steps;
+	if(free > 1) return -1;
+	if(steps < 1) return -1;
+	if(dir > 1) return -1;
 	if(dir == 0) smc_dir = -1; else smc_dir = 1;
 	smc_free	= free;
-	smc.attach_us(&SMC_routine, (time_ms*1000)/steps);			
+  uint32_t steptime = (time_ms*1000)/steps;
+	if(steptime < MIN_STEPTIME_US)
+			return -1;	
+	SMC_init();				
+	smc.attach_us(&SMC_routine, steptime);
+	return 0;	
+}
+
+int SMC_step_cmd(step_command_t *scmd){
+	#warning SMC_step_cmd DOET HET NIET
+ 	smc_steps = scmd->steps;
+	if(scmd->free > 1) return -1;
+	if(scmd->steps < 1) return -1;
+	if(scmd->dir > 1) return -1;
+	if(scmd->dir == 0) smc_dir = -1; else smc_dir = 1;
+	smc_free	= scmd->free;
+  uint32_t steptime = (scmd->time_ms*1000)/scmd->steps;
+	if(steptime < MIN_STEPTIME_US)
+			return -1;
+			
+	smc.attach_us(&SMC_routine, steptime);
+	return 0;	
+}
+
+uint32_t SMC_idle(void){
+	if(smc_steps == -1)
+		return 1;
+	else
+		return 0;
 }
 
 
