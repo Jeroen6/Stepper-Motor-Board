@@ -6,6 +6,7 @@
 ### List of Objects: adding '".\build\smc.o"'
 ### List of Objects: adding '".\build\usb.o"'
 ### List of Objects: adding '".\build\watchdog.o"'
+### List of Objects: adding '".\build\byteoperations.o"'
 ### List of Objects: adding '".\build\usbhal_lpc11u.o"'
 ### List of Objects: adding '".\build\usbdevice.o"'
 ### List of Objects: adding '".\build\usbmousekeyboard.o"'
@@ -13,7 +14,7 @@
 ### List of Objects: adding '".\build\usbkeyboard.o"'
 ### List of Objects: adding '".\build\usbhid.o"'
 ### ADS-LD Command completed:
---cpu Cortex-M0 ".\build\main.o" ".\build\ct32b0_pwm.o" ".\build\smc.o" ".\build\usb.o" ".\build\watchdog.o" ".\build\usbhal_lpc11u.o" ".\build\usbdevice.o" ".\build\usbmousekeyboard.o" ".\build\usbmouse.o" ".\build\usbkeyboard.o" ".\build\usbhid.o" 
+--cpu Cortex-M0 ".\build\main.o" ".\build\ct32b0_pwm.o" ".\build\smc.o" ".\build\usb.o" ".\build\watchdog.o" ".\build\byteoperations.o" ".\build\usbhal_lpc11u.o" ".\build\usbdevice.o" ".\build\usbmousekeyboard.o" ".\build\usbmouse.o" ".\build\usbkeyboard.o" ".\build\usbhid.o" 
 --strict --scatter "mbed/TARGET_LPC11U24/TOOLCHAIN_ARM_STD/LPC11U24.sct" 
 
             
@@ -35,7 +36,7 @@
 ### ADS-LD Output File: '.\build\SteppermotorBoard.axf'
 ### ADS-LD Command File: '.\build\SteppermotorBoard.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile '.\build\SteppermotorBoard.lnp', Handle=0x00001028
+### Creating CmdFile '.\build\SteppermotorBoard.lnp', Handle=0x00000970
 ### Writing '.lnp' file
 ### ADS-LD Command file '.\build\SteppermotorBoard.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.

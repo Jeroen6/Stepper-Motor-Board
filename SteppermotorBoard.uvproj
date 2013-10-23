@@ -450,6 +450,21 @@
               <FileType>5</FileType>
               <FilePath>.\watchdog.h</FilePath>
             </File>
+            <File>
+              <FileName>ByteOperations.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\ByteOperations.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>ByteOperations.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ByteOperations.h</FilePath>
+            </File>
+            <File>
+              <FileName>USBHIDProtocol.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\USBHIDProtocol.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
