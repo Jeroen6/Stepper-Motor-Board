@@ -59,16 +59,32 @@ void SMC_routine(void){
 	// Phase 1 A	
 	// If sin +, H1->L2
 	// If sin -, H2->L1
-	HIFET_1 = LUT_H1[i];
-	HIFET_2 = LUT_H2[i];
-	if(LUT_L1[i] == 0)
-		CT32B0_set(0,PWM_PERIOD+1);
-	else
-		CT32B0_set(0,PWM_PERIOD-LUT_L1[i]);
-	if(LUT_L2[i] == 0)
-		CT32B0_set(1,PWM_PERIOD+1);
-	else
-		CT32B0_set(1,PWM_PERIOD-LUT_L2[i]);
+	// If direction -1, swap motor A channels, this changes direction.
+	// Reversing lookup table is not effective
+	if(smc_dir > 0){
+		HIFET_1 = LUT_H1[i];
+		HIFET_2 = LUT_H2[i];
+		if(LUT_L1[i] == 0)
+			CT32B0_set(0,PWM_PERIOD+1);
+		else
+			CT32B0_set(0,PWM_PERIOD-LUT_L1[i]);
+		if(LUT_L2[i] == 0)
+			CT32B0_set(1,PWM_PERIOD+1);
+		else
+			CT32B0_set(1,PWM_PERIOD-LUT_L2[i]);
+	}else{
+		// Reversed for dir -1
+		HIFET_1 = LUT_H2[i];
+		HIFET_2 = LUT_H1[i];
+		if(LUT_L2[i] == 0)
+			CT32B0_set(0,PWM_PERIOD+1);
+		else
+			CT32B0_set(0,PWM_PERIOD-LUT_L2[i]);
+		if(LUT_L1[i] == 0)
+			CT32B0_set(1,PWM_PERIOD+1);
+		else
+			CT32B0_set(1,PWM_PERIOD-LUT_L1[i]);
+	}
 
 	// Phase 1 A	
 	// If sin +, H1->L2
@@ -107,34 +123,35 @@ void SMC_routine(void){
 	
 	if( errfet[0] | errfet[1] | errfet[2] | errfet[3] ){
 		// ILLEGAL MODE
-		smc_abort = 1;
+	//	smc_abort = 1;
+		 __NOP();
 	}
 	
 	#undef i
 	
 	/* Walk */
-	smc_walker += smc_dir;
+	smc_walker += abs(smc_dir);
 	if(smc_walker > 31)
 	smc_walker = 0;
 	if(smc_walker < 0)
 	smc_walker = 31;
 	/* Coutdown */
 	if(smc_steps != -1){
-	if(smc_steps == 0 || smc_abort == 1){
-		if(smc_free || smc_abort == 1){
-			// motor free
-			HIFET_1 = 0;
-			HIFET_2 = 0;
-			HIFET_3 = 0;
-			HIFET_4 = 0;
-			CT32B0_deinit(0);
-		}else{
-			// motor locked
+		if(smc_steps == 0 || smc_abort == 1){
+			if(smc_free || smc_abort == 1){
+				// motor free
+				HIFET_1 = 0;
+				HIFET_2 = 0;
+				HIFET_3 = 0;
+				HIFET_4 = 0;
+				CT32B0_deinit(0);
+			}else{
+				// motor locked
+			}
+			smc.detach();
+			smc_abort = 0;
+			smc_isPaused = 0;
 		}
-		smc.detach();
-		smc_abort = 0;
-		smc_isPaused = 0;
-	}
 	smc_steps--;
 	}
 }
