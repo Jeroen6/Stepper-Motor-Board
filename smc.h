@@ -3,21 +3,20 @@
 
 #include <stdint.h>
 
-typedef  struct  {
-	int steps;
-	uint32_t time_ms;
-	uint8_t free;
-	uint8_t dir;
-} step_command_t; 
-
-
-
+/* Api */
 void SMC_init(void);
 //void SMC_routine(void);
 int SMC_step(int steps, uint8_t dir, uint32_t time_ms, uint8_t free);
-int SMC_step_cmd(step_command_t *cmd);
 uint32_t SMC_idle(void);
 void SMC_deinit(void);
+
+void SMC_brake(void);
+void SMC_free(void);
+
+void SMC_pause(void);
+void SMC_continue(void);
+
+int SMC_getState(void);
 
 /* Lookup tables */
 const uint16_t LUT_H1[32] = {

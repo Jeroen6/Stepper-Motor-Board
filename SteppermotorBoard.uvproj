@@ -465,6 +465,16 @@
               <FileType>5</FileType>
               <FilePath>.\USBHIDProtocol.h</FilePath>
             </File>
+            <File>
+              <FileName>CT16B1_PWM.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\CT16B1_PWM.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>CT16B1_PWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\CT16B1_PWM.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

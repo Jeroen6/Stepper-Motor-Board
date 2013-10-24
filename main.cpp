@@ -5,11 +5,12 @@
 #include "ByteOperations.h"
 #include "USBHIDProtocol.h"
 #include "WatchDog.h"
+#include "CT16B1_PWM.h"
 
 #pragma anon_unions
 /* Main routine handles USB and SMC api */
 
-#define VERSION	0x00
+#define VERSION	0x01
 
 // USB HID Objects
 USBHID *hid;
@@ -53,6 +54,11 @@ int main(void){
 	LPC_SYSCON->SYSRSTSTAT = 0x1F;
 	// Motor Control IO config
 	SMC_init();
+	
+		// Motor selftest
+	SMC_step(1600, 0,1000, 1);
+	while( !SMC_idle() );
+	
 	// aux init
 	aux = 0;
 	// LED
@@ -64,10 +70,7 @@ int main(void){
 	// button config
 	Ticker_button.attach_us(&Ticker_button_handler, 20000);
 
-	
-	// Motor selftest
-	//SMC_step(1600, 1,15000, 1);
-	//while( !SMC_idle() );
+
 	
 	// Ready
 	while(1){
@@ -89,7 +92,8 @@ int main(void){
 						WatchDog_us bello(100);
 					}else{
 					  // Soft reset
-						#warning deinit smc
+						SMC_deinit();
+						CT16B1_deinit(0);
 						led = 1;
 					}
 				break;
@@ -115,34 +119,52 @@ int main(void){
 					uint32_t arg_time =	read_8_to_32(&irx, recv_report.data);				
 					uint8_t  arg_free	=	recv_report.data[irx++];
 					SMC_step(arg_step, arg_dir, arg_time, arg_free);
+					#warning When dir 0, motor does not rotate, only vibrate. FIX IT
 				}
 				break;
 				case 	CMD_SMC_STATE		:
-					write_32_to_8(&itx, send_report.data, 0x12345678);	
+					write_32_to_8(&itx, send_report.data, SMC_getState());	
 				break;
 				case 	CMD_SMC_STOP		:
-					#warning SMC_Stop implement here
+					SMC_deinit();
 				break;
 				case 	CMD_SMC_PAUSE		:
-					#warning SMC_ticker detach
+					SMC_pause();
 				break;
 				case 	CMD_SMC_CONTINUE:
-					#warning SMC_ticker attach if not -1
+					SMC_continue();
 				break;
 				case 	CMD_SMC_FREE		:
-					#warning stop+de_init motor when no running command, free
+					SMC_free();
 				break;
 				case 	CMD_SMC_BRAKE		:
-					#warning stop+de_init motor when no running command, brake
+					SMC_brake();
 				break;
 				case 	CMD_AUX_OFF			:
 					aux = 0;	
+					if(CT16B1_isStarted())
+						CT16B1_deinit(0);
 				break;
 				case 	CMD_AUX_ON			:
 					aux = 1;
+					if(CT16B1_isStarted())
+						CT16B1_deinit(1);
 				break;
-				case 	CMD_AUX_PWM			:
-					/* Not implemented */
+				case 	CMD_AUX_PWM			: {
+					uint16_t dutycycle, period, prescaler;
+					dutycycle = read_8_to_16(&irx, recv_report.data);
+					period 		= read_8_to_16(&irx, recv_report.data);
+					prescaler = read_8_to_16(&irx, recv_report.data);
+					/* Invert PWM, since timer is inverted */
+					dutycycle = period - dutycycle;
+					if(CT16B1_isStarted()){
+					  CT16B1_wait_refresh();
+						CT16B1_set(1, dutycycle);
+					}else{
+						CT16B1_initpwm(period,dutycycle,prescaler);
+						CT16B1_start();
+					}
+				}					
 				break;
 				default:
 					send_report.data[0] =	0xFF;	//Failure

@@ -1,6 +1,7 @@
 #include "mbed.h"
 #include "smc.h"
 #include "CT32B0_PWM.h"
+#include "CT16B1_PWM.h"
 
 #define PWM_PERIOD				513
 #define MIN_STEPTIME_US  	100
@@ -13,11 +14,13 @@ DigitalOut HIFET_4(P0_19);
 
 /* Motor Control stepcontrol */
 Ticker smc;
-volatile int smc_walker	=	0;
-volatile int smc_dir 		= 1;
-volatile int smc_steps	= -1;
-volatile int smc_free		= 1;
-volatile int smc_abort	= 0;
+volatile static int smc_walker		=	0;
+volatile static int smc_dir 			= 1;
+volatile static int smc_steps			= -1;
+volatile static int smc_free			= 1;
+volatile static int smc_abort			= 0;
+volatile static int smc_steptime 	= 0;
+volatile static int smc_isPaused 	= 0;
 
 void SMC_init(void){
 	// Hi fet low
@@ -130,6 +133,7 @@ void SMC_routine(void){
 		}
 		smc.detach();
 		smc_abort = 0;
+		smc_isPaused = 0;
 	}
 	smc_steps--;
 	}
@@ -147,18 +151,19 @@ int SMC_step(int steps, uint8_t dir, uint32_t time_ms, uint8_t free){
 	if(free) free = 1;        			// Round free to bool
 	if(steptime < MIN_STEPTIME_US)  // Verify steptime
 			return -1;
-	if(dir == 0) smc_dir = -1; else smc_dir = 1;
+	if(dir == 0) 
+		smc_dir = -1; 
+	else 
+		smc_dir = 1;
 	// Configure stepper
 	smc_steps = steps;
 	smc_free	= free;
+	smc_steptime = steptime;
+	smc_isPaused = 0;
 	// Initiate
 	SMC_init();				
-	smc.attach_us(&SMC_routine, steptime);
+	smc.attach_us(&SMC_routine, smc_steptime);
 	return 0;	
-}
-
-int SMC_step_cmd(step_command_t *scmd){
-	return -1;
 }
 
 uint32_t SMC_idle(void){
@@ -168,4 +173,43 @@ uint32_t SMC_idle(void){
 		return 0;
 }
 
+void SMC_brake(void){
+	// Do not brake when active control
+	if(smc_walker > 0)
+		return;
+	// Regular deinit
+	SMC_deinit();
+	// Re-enable low side
+	CT32B0_deinit(1);
+}
 
+void SMC_free(void){
+	// Do not free when active control
+	if(smc_walker > 0)
+		return;
+	// Regular deinit
+	SMC_deinit();
+	// Re-enable low side
+	CT32B0_deinit(0);
+}
+
+void SMC_pause(void){
+	smc.detach();
+	smc_isPaused = 1;
+}
+
+void SMC_continue(void){
+	smc.attach_us(&SMC_routine, smc_steptime);
+	smc_isPaused = 0;
+}
+
+int SMC_getState(void){
+	if( smc_steps < 0 ){
+		return 0;
+	}else{
+	  if(smc_isPaused)
+			return (-1*smc_steps);
+		else
+		  return (1*smc_steps);
+	}
+}

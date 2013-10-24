@@ -15,11 +15,13 @@
 		Stage 1: PWM enabled on MAT 0, MAT 1 and MAT 3.
 		Unused MAT outputs will be pullled down.
 */		
-volatile uint8_t 	stage 	= 0;
-volatile uint32_t period 	= 0;
-volatile uint32_t mat[4];
-volatile uint32_t default_period_us;
-volatile uint32_t defaultstate;
+
+/* Static makes them private to this module */
+volatile static uint8_t 	stage 	= 0;
+volatile static uint32_t period 	= 0;
+volatile static uint32_t mat[4];
+volatile static uint32_t default_period_us;
+volatile static uint32_t defaultstate;
 
 void CT32B0_initpwm(uint32_t period_us, uint32_t defaultstate){
 		// Calculte period
