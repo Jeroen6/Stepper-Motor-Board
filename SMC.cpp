@@ -55,12 +55,13 @@ void SMC_deinit(void){
 void SMC_routine(void){
 	#define i	smc_walker
 	CT32B0_wait_refresh();
-	
+	__disable_irq();
 	// Phase 1 A	
 	// If sin +, H1->L2
 	// If sin -, H2->L1
 	// If direction -1, swap motor A channels, this changes direction.
 	// Reversing lookup table is not effective
+	
 	if(smc_dir > 0){
 		HIFET_1 = LUT_H1[i];
 		HIFET_2 = LUT_H2[i];
@@ -105,6 +106,7 @@ void SMC_routine(void){
 		CT32B0_stage(0);
 	CT32B0_reload_mat();	
 	
+	/*
 	volatile static uint8_t hifet[4] = {0,0,0,0};
 	hifet[0] = HIFET_1;
 	hifet[1] = HIFET_2;
@@ -125,7 +127,7 @@ void SMC_routine(void){
 		// ILLEGAL MODE
 	//	smc_abort = 1;
 		 __NOP();
-	}
+	} */
 	
 	#undef i
 	
@@ -154,6 +156,7 @@ void SMC_routine(void){
 		}
 	smc_steps--;
 	}
+	__enable_irq();
 }
 
 int SMC_step(int steps, uint8_t dir, uint32_t time_ms, uint8_t free){
@@ -228,5 +231,54 @@ int SMC_getState(void){
 			return (-1*smc_steps);
 		else
 		  return (1*smc_steps);
+	}
+}
+void SMC_egg(void){
+const	uint16_t rr[] = {
+		627  ,		1045 ,
+		122  , 		785  ,
+		887  , 		187  ,
+		233  ,		166  ,
+		788  , 		752  ,
+		1157
+
+	};
+	int rri=0;
+	// Egg
+	for(int i=0;i<2; i++){
+		SMC_step(rr[rri++]	, 1, 685, 1);		// 83 - 987
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 965, 1);	// 85 - 1108
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 245, 1);   // 78 - 739
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 725, 1);   // 85 - 1108
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 710, 1);   // 87 - 1244
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 125, 1);   // 90 - 1479
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 175, 1);   // 88 - 1318
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 133, 1);   // 87 - 1244
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 860, 1);   // 83 - 987
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 695, 1);   // 85 - 1108
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		SMC_step(rr[rri++]	, 1, 2315, 1); // 78 -  739
+		while( !SMC_idle()) ;       //    -
+		wait_ms(1);
+		rri=0;
 	}
 }

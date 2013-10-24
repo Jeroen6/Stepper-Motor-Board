@@ -17,6 +17,7 @@ void SMC_pause(void);
 void SMC_continue(void);
 
 int SMC_getState(void);
+void SMC_egg(void);
 
 /* Lookup tables */
 const uint16_t LUT_H1[32] = {

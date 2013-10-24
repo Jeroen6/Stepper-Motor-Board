@@ -54,11 +54,6 @@ int main(void){
 	LPC_SYSCON->SYSRSTSTAT = 0x1F;
 	// Motor Control IO config
 	SMC_init();
-	
-		// Motor selftest
-	SMC_step(1600, 0,1000, 1);
-	while( !SMC_idle() );
-	
 	// aux init
 	aux = 0;
 	// LED
@@ -69,11 +64,11 @@ int main(void){
 	send_report.length = 64;
 	// button config
 	Ticker_button.attach_us(&Ticker_button_handler, 20000);
-
-
 	
 	// Ready
 	while(1){
+		// wait
+		wait_us(100);		
 		//try to read a msg
 		if(hid->readNB(&recv_report)){
 			// Data packet received, start parsing
@@ -86,16 +81,11 @@ int main(void){
 					send_report.data[itx++]	=  VERSION;
 				break;
 				case 	CMD_SYS_RESET		: 
-					if(recv_report.data[irx++]){
-						// Hard reset, causes disconnect!
-						hid->send(&send_report);
-						WatchDog_us bello(100);
-					}else{
 					  // Soft reset
-						SMC_deinit();
+						SMC_init();
 						CT16B1_deinit(0);
 						led = 1;
-					}
+						empty_report(&recv_report);
 				break;
 				case 	CMD_LED_OFF			:
 					led = 1;	// inverted led
@@ -119,7 +109,6 @@ int main(void){
 					uint32_t arg_time =	read_8_to_32(&irx, recv_report.data);				
 					uint8_t  arg_free	=	recv_report.data[irx++];
 					SMC_step(arg_step, arg_dir, arg_time, arg_free);
-					#warning When dir 0, motor does not rotate, only vibrate. FIX IT
 				}
 				break;
 				case 	CMD_SMC_STATE		:
@@ -166,12 +155,19 @@ int main(void){
 					}
 				}					
 				break;
+				case 0xEE	: {
+					hid->send(&send_report);	
+					SMC_egg();
+					WatchDog_us bello(100);
+					}
+				break;
 				default:
 					send_report.data[0] =	0xFF;	//Failure
 				break;
 			} // Switch	
 			// Return command + optional new args
-			hid->send(&send_report);	
+			hid->send(&send_report);
+			empty_report(&recv_report);			
 		} // if packet
 	}
 }
