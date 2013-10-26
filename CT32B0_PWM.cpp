@@ -1,28 +1,42 @@
+ /**
+ * @file    CT32B0_PWM.cpp
+ * @brief   Small driver to user CT32B0 for PWM
+ *
+ * @author	Jeroen Lodder
+ * @date		Oktober 2013
+ *
+ * @note		Since only one timer is used to supply 4 PWM channels 
+ * 					a problem occurs because CT32B0 only support 3 PWM channels.
+ * 					
+ * 					Since this software is designed for a H-Bridge implementation 
+ * 					only 2 of 4 PWM channels are required to be active simultaneously.
+ * 					
+ * 					This is where the stage variable comes in:
+ * 					Stage 0: PWM enabled on MAT 0, MAT 1 and MAT 2.
+ * 					Stage 1: PWM enabled on MAT 0, MAT 1 and MAT 3.
+ * 					Unused MAT outputs will be pullled down.
+ * @{
+ */
 #include "mbed.h"
 #include "CT32B0_PWM.h"
 
 // Prescaler 48 gives 1 us per tick
-#define CT32B0_PRESCALER 48	
-
-/*  Since only one timer is used to supply 4 PWM channels 
-		a problem occurs because CT32B0 only support 3 PWM channels.
-	
-		Since this software is designed for a H-Bridge implementation 
-		only 2 of 4 PWM channels are required to be active simultaneously.
-		
-		This is where the stage variable comes in:
-		Stage 0: PWM enabled on MAT 0, MAT 1 and MAT 2.
-		Stage 1: PWM enabled on MAT 0, MAT 1 and MAT 3.
-		Unused MAT outputs will be pullled down.
-*/		
+#define CT32B0_PRESCALER 48		/**< @brief Timer prescaler from AHBCLK */	
 
 /* Static makes them private to this module */
-volatile static uint8_t 	stage 	= 0;
-volatile static uint32_t period 	= 0;
-volatile static uint32_t mat[4];
-volatile static uint32_t default_period_us;
-volatile static uint32_t defaultstate;
+volatile static uint8_t  stage 		= 0;		   /**< @brief Stage identifier for mat2/3 swap */
+volatile static uint32_t period 	= 0;       /**< @brief PWM Period register */
+volatile static uint32_t mat[4];             /**< @brief PWM Mat output registers */
+volatile static uint32_t default_period_us;  /**< @brief Given period in us */
+volatile static uint32_t defaultstate;       /**< @brief Default PWM state on init */
 
+/**
+ * @brief   Initializes PWM
+ *
+ * @param[in] period_us   	Period in us, when prescaler is 48
+ * @param[in] defaultstate  State after initializing
+ * @note Run Start() to start pwm
+ */
 void CT32B0_initpwm(uint32_t period_us, uint32_t defaultstate){
 		// Calculte period
 		period = period_us;
@@ -76,14 +90,24 @@ void CT32B0_initpwm(uint32_t period_us, uint32_t defaultstate){
 		LPC_CT32B0->TCR		= 0;
 }
 
+/**
+ * @brief   Re-Initializes PWM
+ */
 void CT32B0_reinitpwm(void){
 	CT32B0_initpwm(default_period_us,defaultstate	);
 }
 
+/**
+ * @brief   Start PWM
+ */
 void CT32B0_start(void){
 	LPC_CT32B0->TCR		= 1;		// Enable
 }
 
+/**
+ * @brief   Stop PWM
+ * @param[in] state		PWM output state when pwm disabled
+ */
 void CT32B0_deinit(uint8_t state){
   LPC_CT32B0->TCR		= 2;		// Disable and reset counter
 	// Set all to GPIO
@@ -98,6 +122,10 @@ void CT32B0_deinit(uint8_t state){
 		LPC_GPIO->CLR[1] 	= (1<<24)|(1<<25)|(1<<26)|(1<<27);
 }
 
+/**
+ * @brief   Set stage
+ * @param[in]	stagearg	1 or 0
+ */
 void CT32B0_stage(uint8_t stagearg){
 	stage = stagearg;
 	// Set outputs to stage
@@ -124,6 +152,9 @@ void CT32B0_stage(uint8_t stagearg){
 	}
 }
 
+/**
+ * @brief  Reload all match compare registers
+ */
 void CT32B0_reload_mat(void){
 	LPC_CT32B0->MR0 = mat[0]; 
 	LPC_CT32B0->MR1 = mat[1];
@@ -134,12 +165,21 @@ void CT32B0_reload_mat(void){
 	}
 }
 
+/**
+ * @brief   Set channel PWM
+ */
 void CT32B0_set(uint8_t matnr, uint32_t value){
 	mat[matnr] = value;
 	CT32B0_reload_mat();
 }
 
+/**
+ * @brief   Wait for timer to reach 0
+ */
 void CT32B0_wait_refresh(void){
 	if( (LPC_CT32B0->TCR & 1) )
 		while(LPC_CT32B0->TC != 0);
 }
+/**
+ * @}
+ */

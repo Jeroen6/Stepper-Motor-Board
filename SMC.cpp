@@ -1,27 +1,38 @@
+/**
+ * @file    SMC.cpp
+ * @brief   Stepper motor control module uses 1/8 microstepping
+ *
+ * @author	Jeroen Lodder
+ * @date		Oktober 2013
+ *
+ * @{
+ */
 #include "mbed.h"
 #include "smc.h"
 #include "CT32B0_PWM.h"
-#include "CT16B1_PWM.h"
 
-#define PWM_PERIOD				513
-#define MIN_STEPTIME_US  	100
+#define PWM_PERIOD				513		/**< @brief PWM period integer */
+#define MIN_STEPTIME_US  	100   /**< @brief Minimum time required for Hi-side driver (in uS) */
 
 /* Motor Control IO */
-DigitalOut HIFET_1(P0_16);
-DigitalOut HIFET_2(P0_17);
-DigitalOut HIFET_3(P0_18);
-DigitalOut HIFET_4(P0_19);
+DigitalOut HIFET_1(P0_16);	/**< @brief Hi Side FET 1 of bridge 1 */
+DigitalOut HIFET_2(P0_17);  /**< @brief Hi Side FET 2 of bridge 1 */
+DigitalOut HIFET_3(P0_18);  /**< @brief Hi Side FET 3 of bridge 2 */
+DigitalOut HIFET_4(P0_19);  /**< @brief Hi Side FET 4 of bridge 2 */
 
 /* Motor Control stepcontrol */
 Ticker smc;
-volatile static int smc_walker		=	0;
-volatile static int smc_dir 			= 1;
-volatile static int smc_steps			= -1;
-volatile static int smc_free			= 1;
-volatile static int smc_abort			= 0;
-volatile static int smc_steptime 	= 0;
-volatile static int smc_isPaused 	= 0;
+volatile static int smc_walker		=	0;	/**< @brief Motor control LUT index */
+volatile static int smc_dir 			= 1; 	/**< @brief Director in lookup table (unused) */
+volatile static int smc_steps			= -1; /**< @brief Remaining steps */
+volatile static int smc_free			= 1;  /**< @brief Argument to free motor when done */
+volatile static int smc_abort			= 0;  /**< @brief Set when motor control should quit by itself */
+volatile static int smc_steptime 	= 0;  /**< @brief Time used to make 1 step */
+volatile static int smc_isPaused 	= 0;  /**< @brief Boolean for paused state of control */
 
+/**
+ * @brief   Initializes Stepper Motor Control
+ */
 void SMC_init(void){
 	// Hi fet low
   HIFET_1 = 0;
@@ -36,6 +47,9 @@ void SMC_init(void){
 	CT32B0_start();
 }
 
+/**
+ * @brief   De-Initializes Stepper Motor Control
+ */
 void SMC_deinit(void){
 	smc.detach();
 	CT32B0_deinit(0);
@@ -52,6 +66,9 @@ void SMC_deinit(void){
   smc_abort	= 0;
 }
 
+/**
+ * @brief   Routine called by interrupt to modify H-Bridge states
+ */
 void SMC_routine(void){
 	#define i	smc_walker
 	CT32B0_wait_refresh();
@@ -66,25 +83,25 @@ void SMC_routine(void){
 		HIFET_1 = LUT_H1[i];
 		HIFET_2 = LUT_H2[i];
 		if(LUT_L1[i] == 0)
-			CT32B0_set(0,PWM_PERIOD+1);
+			CT32B0_set(0, (PWM_PERIOD+1) );
 		else
-			CT32B0_set(0,PWM_PERIOD-LUT_L1[i]);
+			CT32B0_set(0, PWM_PERIOD-LUT_L1[i] );
 		if(LUT_L2[i] == 0)
-			CT32B0_set(1,PWM_PERIOD+1);
+			CT32B0_set(1, (PWM_PERIOD+1) );
 		else
-			CT32B0_set(1,PWM_PERIOD-LUT_L2[i]);
+			CT32B0_set(1, PWM_PERIOD-LUT_L2[i] );
 	}else{
 		// Reversed for dir -1
 		HIFET_1 = LUT_H2[i];
 		HIFET_2 = LUT_H1[i];
 		if(LUT_L2[i] == 0)
-			CT32B0_set(0,PWM_PERIOD+1);
+			CT32B0_set(0, (PWM_PERIOD+1) );
 		else
-			CT32B0_set(0,PWM_PERIOD-LUT_L2[i]);
+			CT32B0_set(0, PWM_PERIOD-LUT_L2[i] );
 		if(LUT_L1[i] == 0)
-			CT32B0_set(1,PWM_PERIOD+1);
+			CT32B0_set(1, (PWM_PERIOD+1) );
 		else
-			CT32B0_set(1,PWM_PERIOD-LUT_L1[i]);
+			CT32B0_set(1, PWM_PERIOD-LUT_L1[i] );
 	}
 
 	// Phase 1 A	
@@ -93,13 +110,13 @@ void SMC_routine(void){
 	HIFET_3 = LUT_H3[i]; 
 	HIFET_4 = LUT_H4[i]; 
 	if(LUT_L3[i] == 0)
-		CT32B0_set(2,PWM_PERIOD+1);
+		CT32B0_set(2, (PWM_PERIOD+1) );
 	else
-		CT32B0_set(2,PWM_PERIOD-LUT_L3[i]);
+		CT32B0_set(2, PWM_PERIOD-LUT_L3[i] );
 	if(LUT_L4[i] == 0)
-		CT32B0_set(3,PWM_PERIOD+1);
+		CT32B0_set(3, (PWM_PERIOD+1) );
 	else
-		CT32B0_set(3,PWM_PERIOD-LUT_L4[i]);
+		CT32B0_set(3, PWM_PERIOD-LUT_L4[i] );
 	if(i==9)
 		CT32B0_stage(1);
 	if(i==24)
@@ -132,11 +149,11 @@ void SMC_routine(void){
 	#undef i
 	
 	/* Walk */
-	smc_walker += abs(smc_dir);
+	smc_walker += 1; //abs(smc_dir);
 	if(smc_walker > 31)
 	smc_walker = 0;
-	if(smc_walker < 0)
-	smc_walker = 31;
+	//if(smc_walker < 0)
+	//smc_walker = 31;
 	/* Coutdown */
 	if(smc_steps != -1){
 		if(smc_steps == 0 || smc_abort == 1){
@@ -159,6 +176,15 @@ void SMC_routine(void){
 	__enable_irq();
 }
 
+/**
+ * @brief   Stepper motor control main command
+ *
+ * @param[in] 	steps			Number of steps to take
+ * @param[in] 	dir			  Direction to step in, 1 or 0
+ * @param[in] 	time_ms	  Time to take for these steps
+ * @param[in] 	free	    Free or lock motor when done 1 or 0 respectively
+ * @return			-1 when illegal command or mode	 
+ */
 int SMC_step(int steps, uint8_t dir, uint32_t time_ms, uint8_t free){
 	// steps   = number of microsteps (8 microsteps per full step)
 	// dir	   = -1 or 1
@@ -186,6 +212,9 @@ int SMC_step(int steps, uint8_t dir, uint32_t time_ms, uint8_t free){
 	return 0;	
 }
 
+/**
+ * @brief   Return 1 of stepper motor control is idle
+ */
 uint32_t SMC_idle(void){
 	if(smc_steps == -1)
 		return 1;
@@ -193,6 +222,9 @@ uint32_t SMC_idle(void){
 		return 0;
 }
 
+/**
+ * @brief   Puts motor in brake mode, enable all low-side mosfets
+ */
 void SMC_brake(void){
 	// Do not brake when active control
 	if(smc_walker > 0)
@@ -203,6 +235,9 @@ void SMC_brake(void){
 	CT32B0_deinit(1);
 }
 
+/**
+ * @brief   Puts motor in free mode, disables all mosfets
+ */
 void SMC_free(void){
 	// Do not free when active control
 	if(smc_walker > 0)
@@ -213,16 +248,29 @@ void SMC_free(void){
 	CT32B0_deinit(0);
 }
 
+/**
+ * @brief   Pause current stepping command
+ */
 void SMC_pause(void){
-	smc.detach();
-	smc_isPaused = 1;
+	if( !SMC_idle() ){
+		smc.detach();
+		smc_isPaused = 1;
+	}
 }
 
+/**
+ * @brief   Continue from pause
+ */
 void SMC_continue(void){
-	smc.attach_us(&SMC_routine, smc_steptime);
-	smc_isPaused = 0;
+	if( !SMC_idle() && smc_isPaused==1 ){
+		smc.attach_us(&SMC_routine, smc_steptime);
+		smc_isPaused = 0;
+	}
 }
 
+/**
+ * @brief   Return remaining steps, negative if paused
+ */
 int SMC_getState(void){
 	if( smc_steps < 0 ){
 		return 0;
@@ -233,6 +281,10 @@ int SMC_getState(void){
 		  return (1*smc_steps);
 	}
 }
+
+/**
+* @brief   Egg, open it to find out
+*/
 void SMC_egg(void){
 const	uint16_t rr[] = {
 		627  ,		1045 ,
@@ -241,7 +293,6 @@ const	uint16_t rr[] = {
 		233  ,		166  ,
 		788  , 		752  ,
 		1157
-
 	};
 	int rri=0;
 	// Egg
@@ -282,3 +333,7 @@ const	uint16_t rr[] = {
 		rri=0;
 	}
 }
+/**
+ *@}
+ */
+
