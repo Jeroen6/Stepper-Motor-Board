@@ -12,7 +12,7 @@
 #include "CT32B0_PWM.h"
 
 #define PWM_PERIOD				513		/**< @brief PWM period integer */
-#define MIN_STEPTIME_US  	100   /**< @brief Minimum time required for Hi-side driver (in uS) */
+#define MIN_STEPTIME_US  	100   /**< @brief Minimum time required for one microstep, derived from Hi-side driver latency (in uS) */
 
 /* Motor Control IO */
 DigitalOut HIFET_1(P0_16);	/**< @brief Hi Side FET 1 of bridge 1 */
@@ -64,6 +64,7 @@ void SMC_deinit(void){
 	smc_steps	= -1;
 	smc_free		= 1;
   smc_abort	= 0;
+	smc_isPaused = 0;
 }
 
 /**

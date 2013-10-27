@@ -46,7 +46,7 @@ void CT32B0_initpwm(uint32_t period_us, uint32_t defaultstate){
 		mat[1] = defaultstate;
 		mat[2] = defaultstate;
 		mat[3] = defaultstate;
-		
+	
 		LPC_SYSCON->SYSAHBCLKCTRL |= (1<<6)|(1<<9);
 
 		LPC_CT32B0->IR		= 0x5F;							// Clear int 
@@ -60,32 +60,32 @@ void CT32B0_initpwm(uint32_t period_us, uint32_t defaultstate){
 		if(!stage){
 			// Stage 0, use MAT2 as period
 			LPC_CT32B0->PWMC		=	(1<<0)|(1<<1)|(0<<2)|(1<<3);
-			LPC_CT32B0->MCR			= (1<<7);		// Reset on MR2
+			LPC_CT32B0->MCR			= (1<<7);				// Reset on MR2
 			LPC_CT32B0->MR2 		= period;
 			LPC_CT32B0->MR3 		= defaultstate;
 			
-			LPC_GPIO->DIR[1] 		|= (1<<26);
-			LPC_GPIO->CLR[1] 		= (1<<26); 			// Note iocon invert
-			LPC_IOCON->PIO1_26 	= 0x0 | (0x1<<3) ; 	// GPIO
-			LPC_IOCON->PIO1_27 	= 0x1 | (0x1<<3) ;
+			LPC_GPIO->DIR[1] 		|= (1<<26);     // Disable P1_26
+			LPC_GPIO->CLR[1] 		= (1<<26);
+			LPC_IOCON->PIO1_26 	= 0x0; 	// Change pin mode
+			LPC_IOCON->PIO1_27 	= 0x1;
 		}else{
 			// Stage 1, use MAT3 as period
 			LPC_CT32B0->PWMC		=	(1<<0)|(1<<1)|(1<<2)|(0<<3);
-			LPC_CT32B0->MCR			= (1<<10);	//Reset on MR3
+			LPC_CT32B0->MCR			= (1<<10);			//Reset on MR3
 			LPC_CT32B0->MR2 		= defaultstate;
 			LPC_CT32B0->MR3 		= period;
 			
-			LPC_GPIO->DIR[1] 		|= (1<<27);			
+			LPC_GPIO->DIR[1] 		|= (1<<27);			// Disable P1_27			
 			LPC_GPIO->CLR[1] 		= (1<<27);	
-			LPC_IOCON->PIO1_26 	= 0x1 | (0x1<<3) ;	
-			LPC_IOCON->PIO1_27	= 0x0 | (0x1<<3) ; // GPIO
+			LPC_IOCON->PIO1_26 	= 0x1;	
+			LPC_IOCON->PIO1_27	= 0x0; // Change pin mode
 		}
 		
 		// MAT 1 and MAT 2 are not affected by stage
 		LPC_CT32B0->MR0 = defaultstate; 
 		LPC_CT32B0->MR1 = defaultstate;
-		LPC_IOCON->PIO1_24 = 0x1; // MAT and INVERT
-    LPC_IOCON->PIO1_25 = 0x1;
+		LPC_IOCON->PIO1_24 = 0x1; // Change pin mode
+    LPC_IOCON->PIO1_25 = 0x1; // Change pin mode
 		
 		LPC_CT32B0->TCR		= 0;
 }
@@ -111,10 +111,10 @@ void CT32B0_start(void){
 void CT32B0_deinit(uint8_t state){
   LPC_CT32B0->TCR		= 2;		// Disable and reset counter
 	// Set all to GPIO
-	LPC_IOCON->PIO1_24 = 0 | (0x1<<3);
-  LPC_IOCON->PIO1_25 = 0 | (0x1<<3);
-	LPC_IOCON->PIO1_26 = 0 | (0x1<<3);
-	LPC_IOCON->PIO1_27 = 0 | (0x1<<3);
+	LPC_IOCON->PIO1_24 = 0;
+  LPC_IOCON->PIO1_25 = 0;
+	LPC_IOCON->PIO1_26 = 0;
+	LPC_IOCON->PIO1_27 = 0;
 	LPC_GPIO->DIR[1] 	 |= (1<<24)|(1<<25)|(1<<26)|(1<<27);
 	if(state)
 		LPC_GPIO->SET[1] 	= (1<<24)|(1<<25)|(1<<26)|(1<<27);
@@ -137,8 +137,8 @@ void CT32B0_stage(uint8_t stagearg){
 		LPC_CT32B0->MR3			=	mat[3];
 		LPC_GPIO->CLR[1] 		= (1<<26);
 		LPC_GPIO->SET[1]		= (1<<27);
-		LPC_IOCON->PIO1_26 	= 0x0 | (0x1<<3); 	// GPIO
-		LPC_IOCON->PIO1_27 	= 0x1 | (0x1<<3);
+		LPC_IOCON->PIO1_26 	= 0x0; 	// GPIO
+		LPC_IOCON->PIO1_27 	= 0x1;
 	}else{
 		// Stage 1, use MAT3 as period
 		LPC_CT32B0->PWMC		=	(1<<0)|(1<<1)|(1<<2)|(0<<3);
@@ -147,8 +147,8 @@ void CT32B0_stage(uint8_t stagearg){
 		LPC_CT32B0->MR3 		= period;
 		LPC_GPIO->CLR[1] 		= (1<<27);
 		LPC_GPIO->SET[1]		= (1<<26);
-		LPC_IOCON->PIO1_26	= 0x1 | (0x1<<3);
-		LPC_IOCON->PIO1_27 	= 0x0 | (0x1<<3);	// GPIO
+		LPC_IOCON->PIO1_26	= 0x1;
+		LPC_IOCON->PIO1_27 	= 0x0;	// GPIO
 	}
 }
 
