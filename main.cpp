@@ -20,7 +20,7 @@
 
 /* Main routine handles USB and SMC api */
 
-#define VERSION	0x01
+#define VERSION	0x02
 
 /**
  * @brief   USB HID Declarations
@@ -154,14 +154,15 @@ int main(void){
 					SMC_brake();
 				break;
 				case 	CMD_AUX_OFF			:
+					CT16B1_deinit(0);
 					aux = 0;	
-					if(CT16B1_isStarted())
-						CT16B1_deinit(0);
+					//if(CT16B1_isStarted())
+					
 				break;
 				case 	CMD_AUX_ON			:
+					CT16B1_deinit(1);
 					aux = 1;
-					if(CT16B1_isStarted())
-						CT16B1_deinit(1);
+					//if(CT16B1_isStarted())
 				break;
 				case 	CMD_AUX_PWM			: {
 					uint16_t dutycycle, period, prescaler;
@@ -190,7 +191,7 @@ int main(void){
 				break;
 			} // Switch	
 			// Return command + optional new args
-			hid->sendNB(&send_report);
+			hid->send(&send_report);
 			// 0xFF unused bytes
 			empty_report(&recv_report);			
 			empty_report(&send_report);
