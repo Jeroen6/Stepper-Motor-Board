@@ -10,12 +10,11 @@
  */
  
 #include "mbed.h"
-#include "SMC.h"
+#include "smc.h"
 #include "watchdog.h"
 #include "USBHID.h"
 #include "ByteOperations.h"
 #include "USBHIDProtocol.h"
-#include "WatchDog.h"
 #include "CT16B1_PWM.h"
 
 /* Main routine handles USB and SMC api */

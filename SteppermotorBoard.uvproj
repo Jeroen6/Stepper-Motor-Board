@@ -426,44 +426,14 @@
               <FilePath>.\watchdog.cpp</FilePath>
             </File>
             <File>
-              <FileName>CT32B0_PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\CT32B0_PWM.h</FilePath>
-            </File>
-            <File>
-              <FileName>smc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\smc.h</FilePath>
-            </File>
-            <File>
-              <FileName>watchdog.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\watchdog.h</FilePath>
-            </File>
-            <File>
               <FileName>ByteOperations.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\ByteOperations.cpp</FilePath>
             </File>
             <File>
-              <FileName>ByteOperations.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\ByteOperations.h</FilePath>
-            </File>
-            <File>
-              <FileName>USBHIDProtocol.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\USBHIDProtocol.h</FilePath>
-            </File>
-            <File>
               <FileName>CT16B1_PWM.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\CT16B1_PWM.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>CT16B1_PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\CT16B1_PWM.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1028,6 +998,41 @@
               <FileName>USBSerial.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>USBDevice/USBSerial/USBSerial.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>hdr</GroupName>
+          <Files>
+            <File>
+              <FileName>ByteOperations.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ByteOperations.h</FilePath>
+            </File>
+            <File>
+              <FileName>CT32B0_PWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\CT32B0_PWM.h</FilePath>
+            </File>
+            <File>
+              <FileName>smc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\smc.h</FilePath>
+            </File>
+            <File>
+              <FileName>watchdog.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\watchdog.h</FilePath>
+            </File>
+            <File>
+              <FileName>USBHIDProtocol.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\USBHIDProtocol.h</FilePath>
+            </File>
+            <File>
+              <FileName>CT16B1_PWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\CT16B1_PWM.h</FilePath>
             </File>
           </Files>
         </Group>
