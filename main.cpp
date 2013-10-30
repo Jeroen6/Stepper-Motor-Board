@@ -106,6 +106,7 @@ int main(void){
 						SMC_init();
 						CT16B1_deinit(0);
 						led = 1;
+						Ticker_led.detach();
 						aux = 0;
 						empty_report(&recv_report);
 				break;
