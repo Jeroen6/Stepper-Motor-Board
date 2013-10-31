@@ -33,7 +33,7 @@
 ### ADS-LD Output File: '.\build\SteppermotorBoard.axf'
 ### ADS-LD Command File: '.\build\SteppermotorBoard.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile '.\build\SteppermotorBoard.lnp', Handle=0x00000344
+### Creating CmdFile '.\build\SteppermotorBoard.lnp', Handle=0x00000368
 ### Writing '.lnp' file
 ### ADS-LD Command file '.\build\SteppermotorBoard.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.

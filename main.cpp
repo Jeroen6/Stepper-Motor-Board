@@ -19,7 +19,7 @@
 
 /* Main routine handles USB and SMC api */
 
-#define VERSION	0x02
+#define VERSION	3
 
 /**
  * @brief   USB HID Declarations
