@@ -21702,6 +21702,39 @@ Parts Updated:
 <hole x="-2.2" y="1" drill="0.9"/>
 <hole x="2.2" y="1" drill="0.9"/>
 </package>
+<package name="1X03_OVAL">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>
+<wire x1="-3.81" y1="0.635" x2="-3.81" y2="-0.635" width="0.1524" layer="51"/>
+<pad name="1" x="-2.54" y="0" drill="1" shape="long" rot="R90"/>
+<pad name="2" x="0" y="0" drill="1" shape="long" rot="R90"/>
+<pad name="3" x="2.54" y="0" drill="1" shape="long" rot="R90"/>
+<text x="-3.8862" y="1.8288" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.81" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-0.254" y1="-0.254" x2="0.254" y2="0.254" layer="51"/>
+<rectangle x1="-2.794" y1="-0.254" x2="-2.286" y2="0.254" layer="51"/>
+<rectangle x1="2.286" y1="-0.254" x2="2.794" y2="0.254" layer="51"/>
+</package>
+<package name="1X03_ROUND">
+<wire x1="-3.81" y1="0.635" x2="-3.81" y2="-0.635" width="0.1524" layer="51"/>
+<pad name="1" x="-2.54" y="0" drill="1" diameter="1.6764" rot="R90"/>
+<pad name="2" x="0" y="0" drill="1" diameter="1.6764" rot="R90"/>
+<pad name="3" x="2.54" y="0" drill="1" diameter="1.6764" rot="R90"/>
+<text x="-3.8862" y="1.8288" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.81" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-0.254" y1="-0.254" x2="0.254" y2="0.254" layer="51"/>
+<rectangle x1="-2.794" y1="-0.254" x2="-2.286" y2="0.254" layer="51"/>
+<rectangle x1="2.286" y1="-0.254" x2="2.794" y2="0.254" layer="51"/>
+</package>
+<package name="1X03_SMT">
+<description>&lt;p&gt;&lt;b&gt;Pin Headers&lt;/b&gt;&lt;br/&gt;
+2 Pin, 0.1"/2.54mm pitch, SMT&lt;/p&gt;</description>
+<wire x1="-3.81" y1="0.635" x2="-3.81" y2="-0.635" width="0.1524" layer="51"/>
+<smd name="1" x="-2.54" y="1.27" dx="1" dy="3.5" layer="1"/>
+<smd name="2" x="0" y="-1.27" dx="1" dy="3.5" layer="1"/>
+<smd name="3" x="2.54" y="1.27" dx="1" dy="3.5" layer="1"/>
+<text x="-3.8862" y="3.25" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.81" y="-4.5" size="1.27" layer="27">&gt;VALUE</text>
+</package>
 </packages>
 <symbols>
 <symbol name="LM1117">
@@ -21790,6 +21823,17 @@ Parts Updated:
 <pin name="VBUS" x="10.16" y="5.08" visible="pin" length="short" direction="pwr" rot="R180"/>
 <pin name="GND" x="10.16" y="-5.08" visible="pin" length="short" direction="pwr" rot="R180"/>
 <pin name="ID" x="10.16" y="-2.54" visible="pin" length="short" rot="R180"/>
+</symbol>
+<symbol name="PINHD3">
+<wire x1="-6.35" y1="-5.08" x2="1.27" y2="-5.08" width="0.4064" layer="94"/>
+<wire x1="1.27" y1="-5.08" x2="1.27" y2="5.08" width="0.4064" layer="94"/>
+<wire x1="1.27" y1="5.08" x2="-6.35" y2="5.08" width="0.4064" layer="94"/>
+<wire x1="-6.35" y1="5.08" x2="-6.35" y2="-5.08" width="0.4064" layer="94"/>
+<text x="-6.35" y="5.715" size="1.778" layer="95">&gt;NAME</text>
+<text x="-6.35" y="-7.62" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="1" x="-2.54" y="2.54" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="2" x="-2.54" y="0" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="3" x="-2.54" y="-2.54" visible="pad" length="short" direction="pas" function="dot"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -21923,6 +21967,44 @@ This standard 0.05" 10-pin connector is for use with the Cortex M0/M3's native S
 <connect gate="G$1" pin="GND" pad="GND"/>
 <connect gate="G$1" pin="ID" pad="ID"/>
 <connect gate="G$1" pin="VBUS" pad="VBUS"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="HEADER-1X3" prefix="JP" uservalue="yes">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>
+<gates>
+<gate name="A" symbol="PINHD3" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="1X03_OVAL">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+<connect gate="A" pin="3" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ROUND" package="1X03_ROUND">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+<connect gate="A" pin="3" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMT" package="1X03_SMT">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+<connect gate="A" pin="3" pad="3"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -27286,6 +27368,8 @@ Grid 5.00 mm&lt;p&gt;
 <part name="H6" library="holes" deviceset="MOUNT-HOLE" device="3.2"/>
 <part name="H7" library="holes" deviceset="MOUNT-HOLE" device="3.2"/>
 <part name="H8" library="holes" deviceset="MOUNT-HOLE" device="3.2"/>
+<part name="JP1" library="microbuilder" deviceset="HEADER-1X3" device=""/>
+<part name="GND11" library="supply" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -27318,6 +27402,7 @@ Sense = VCC - ( Vshunt * ( R14 / R10 ))</text>
 <wire x1="74.168" y1="55.88" x2="73.152" y2="55.88" width="0.2032" layer="97"/>
 <wire x1="73.152" y1="55.88" x2="73.66" y2="53.34" width="0.2032" layer="97"/>
 <text x="20.32" y="226.06" size="1.9304" layer="97">Improvement: Pull down termination on HI_FET gate signals</text>
+<text x="381" y="220.98" size="1.778" layer="91">Dit is er handmatig op gelijmd en gesoldeerd</text>
 </plain>
 <instances>
 <instance part="V1" gate="1" x="60.96" y="111.76"/>
@@ -27498,6 +27583,8 @@ Sense = VCC - ( Vshunt * ( R14 / R10 ))</text>
 <instance part="H6" gate="G$1" x="264.16" y="15.24"/>
 <instance part="H7" gate="G$1" x="238.76" y="22.86"/>
 <instance part="H8" gate="G$1" x="264.16" y="22.86"/>
+<instance part="JP1" gate="A" x="381" y="215.9"/>
+<instance part="GND11" gate="1" x="375.92" y="205.74"/>
 </instances>
 <busses>
 </busses>
@@ -28137,6 +28224,12 @@ Sense = VCC - ( Vshunt * ( R14 / R10 ))</text>
 <pinref part="GND10" gate="1" pin="GND"/>
 <junction x="254" y="215.9"/>
 </segment>
+<segment>
+<pinref part="JP1" gate="A" pin="3"/>
+<wire x1="378.46" y1="213.36" x2="375.92" y2="213.36" width="0.2032" layer="91"/>
+<wire x1="375.92" y1="213.36" x2="375.92" y2="208.28" width="0.2032" layer="91"/>
+<pinref part="GND11" gate="1" pin="GND"/>
+</segment>
 </net>
 <net name="SWDIO" class="0">
 <segment>
@@ -28446,6 +28539,22 @@ Sense = VCC - ( Vshunt * ( R14 / R10 ))</text>
 <pinref part="X3" gate="-1" pin="1"/>
 <wire x1="251.46" y1="96.52" x2="248.92" y2="96.52" width="0.2032" layer="91"/>
 <junction x="248.92" y="96.52"/>
+</segment>
+</net>
+<net name="TX" class="0">
+<segment>
+<pinref part="IC1" gate="G$1" pin="P1.13/!DTR!/CT16B0_MAT0/TXD"/>
+<pinref part="JP1" gate="A" pin="1"/>
+<wire x1="370.84" y1="218.44" x2="378.46" y2="218.44" width="0.2032" layer="91"/>
+<label x="373.38" y="218.44" size="1.778" layer="95" rot="R90"/>
+</segment>
+</net>
+<net name="RX" class="0">
+<segment>
+<pinref part="IC1" gate="G$1" pin="P1.14/!DSR!/CT16B0_MAT1/RXD"/>
+<pinref part="JP1" gate="A" pin="2"/>
+<wire x1="378.46" y1="215.9" x2="370.84" y2="215.9" width="0.2032" layer="91"/>
+<label x="373.38" y="210.82" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 </nets>
